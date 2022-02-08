@@ -13,7 +13,22 @@ export class UserProfileElement extends LitElement {
   static styles = style;
 
   query = new ApolloQueryController(this, UserProfile);
-  muttn = new ApolloMutationController(this, UpdateProfile);
+  muttn = new ApolloMutationController(this, UpdateProfile, {
+    update(cache, result) {
+      const query = UserProfile;
+      const existing = cache.readQuery({ query });
+      cache.writeQuery({
+        query,
+        data: {
+          ...existing,
+          profile: {
+            ...existing.profile,
+            name: result.data?.updateProfile?.name ?? existing.profile?.name,
+          },
+        },
+      });
+    },
+  });
 
   @query('sl-input') input: HTMLInputElement;
 

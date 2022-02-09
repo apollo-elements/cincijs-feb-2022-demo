@@ -1,0 +1,15 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  align-items: end;
+  gap: 14px;
+  padding: 10vw;
+}
+
+header {
+  grid-column: -1/1;
+}
+
+.loading {
+  opacity: 0
+}

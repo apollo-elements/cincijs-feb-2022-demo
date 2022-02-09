@@ -1,9 +1,10 @@
 import { LitElement, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, query } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { ApolloQueryController } from '@apollo-elements/core';
+import { ApolloMutationController, ApolloQueryController } from '@apollo-elements/core';
 
-import { UserProfile } from './UserProfile.query.graphql.js';
+import { UserProfile } from './UserProfile.query.graphql';
+import { UpdateProfile } from './UpdateProfile.mutation.graphql';
 
 import style from './user-profile.css';
 
@@ -12,6 +13,9 @@ export class UserProfileElement extends LitElement {
   static styles = style;
 
   query = new ApolloQueryController(this, UserProfile);
+  muttn = new ApolloMutationController(this, UpdateProfile);
+
+  @query('sl-input') input: HTMLInputElement;
 
   render() {
     const { data, loading } = this.query;
@@ -21,6 +25,18 @@ export class UserProfileElement extends LitElement {
           Welcome, ${data?.profile?.name}!
         </h2>
       </header>
+
+      <sl-input label="Username"
+                value="${data?.profile?.name}"
+                .disabled="${loading}"></sl-input>
+
+      <sl-button type="primary"
+                 .disabled=${loading}
+                 @click=${this.onClickSave}>Save</sl-button>
     `;
+  }
+
+  onClickSave() {
+    this.muttn.mutate({ variables: { user: { name: this.input.value } } });
   }
 }

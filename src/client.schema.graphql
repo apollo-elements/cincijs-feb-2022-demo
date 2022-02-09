@@ -10,6 +10,19 @@ type Location {
   protocol: String
 }
 
+type User {
+  name: String
+}
+
 type Query {
   location: Location
+  profile: User
+}
+
+input UserInput {
+  name: String
+}
+
+type Mutation {
+  updateProfile(user: UserInput): User
 }

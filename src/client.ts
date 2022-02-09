@@ -1,24 +1,35 @@
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client/core';
+import { ApolloClient, InMemoryCache } from '@apollo/client/core';
+import { SchemaLink } from '@apollo/client/link/schema';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 
-import { locationVar } from './router';
+const PROFILE = { name: 'CinciJS' };
 
-const uri =
-  '/graphql';
-
-export const link = new HttpLink({ uri });
-
-const cache =
-  new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          location(): Location {
-            return locationVar();
+export const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: new SchemaLink({
+    schema: makeExecutableSchema({
+      typeDefs: `
+        type User { name: String }
+        type Query { profile: User }
+        input UserInput { name: String }
+        type Mutation { updateProfile(user: UserInput): User }
+      `,
+      resolvers: {
+        Query: {
+          async profile() {
+            await new Promise(r => setTimeout(r, Math.random() * 5000));
+            return PROFILE;
+          },
+        },
+        Mutation: {
+          async updateProfile(_, args) {
+            await new Promise(r => setTimeout(r, Math.random() * 5000));
+            Object.assign(PROFILE, args.user);
+            return PROFILE;
           },
         },
       },
-    },
-  });
+    }),
+  }),
+});
 
-export const client =
-  new ApolloClient({ cache, link });

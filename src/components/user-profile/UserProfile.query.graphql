@@ -1,0 +1,6 @@
+query UserProfile {
+  profile {
+    name
+  }
+}
+
